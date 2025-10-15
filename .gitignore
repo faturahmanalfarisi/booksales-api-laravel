@@ -1,6 +1,0 @@
-booksales-api/vendor/
-booksales-api/.env
-booksales-api/node_modules/
-booksales-api/storage/
-booksales-api/bootstrap/cache/
-booksales-api/*.log
