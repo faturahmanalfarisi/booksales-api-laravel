@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class AuthorController extends Controller
@@ -26,11 +27,14 @@ class AuthorController extends Controller
     }
 
     public function store(Request $request) {
+        // 1. validator
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'bio' => 'nullable|string',
         ]);
 
+        // 2. check validator error
         if($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -38,11 +42,22 @@ class AuthorController extends Controller
             ], 422);
         }
 
+        // 3. upload image
+        $photoName = null;
+        if ($request->hasFile('photo')) {
+            $image = $request->file('photo');
+            $image->store('authors', 'public');
+            $photoName = $image->hashName();
+        }
+
+        // 4. insert data
         $author = Author::create([
             'name' => $request->name,
-            'country' => $request->country,
+            'photo' => $photoName,
+            'bio' => $request->bio,
         ]);
 
+        // 5. response
         return response()->json([
             'succses' => true,
             'message' => 'Resource added successfully!',
@@ -50,7 +65,6 @@ class AuthorController extends Controller
         ], 201);
     }
 
-    // Metode Show (Tugas)
     public function show(string $id) {
         $author = Author::find($id);
 
@@ -68,8 +82,8 @@ class AuthorController extends Controller
         ], 200);
     }
 
-    // Metode Update (Tugas)
     public function update(string $id, Request $request) {
+        // 1. mencari data
         $author = Author::find($id);
 
         if (!$author) {
@@ -79,9 +93,11 @@ class AuthorController extends Controller
             ], 404);
         }
 
+        // 2. validator
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'bio' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -91,11 +107,25 @@ class AuthorController extends Controller
             ], 422);
         }
 
+        // 3. siapkan data yang ingin di update
         $data = [
             'name' => $request->name,
-            'country' => $request->country,
+            'bio' => $request->bio,
         ];
 
+        // 4. handle image (upload & delete image)
+        if ($request->hasFile('photo')) {
+            $image = $request->file('photo');
+            $image->store('authors', 'public');
+
+            if ($author->photo) {
+                Storage::disk('public')->delete('authors/' . $author->photo);
+            }
+
+            $data['photo'] = $image->hashName();
+        }
+
+        // 5. update data baru ke database
         $author->update($data);
 
         return response()->json([
@@ -105,7 +135,6 @@ class AuthorController extends Controller
         ], 200);
     }
 
-    // Metode Destroy (Tugas)
     public function destroy(string $id) {
         $author = Author::find($id);
 
@@ -114,6 +143,11 @@ class AuthorController extends Controller
                 'success' => false,
                 'message' => 'Resource not found'
             ], 404);
+        }
+
+        if ($author->photo) {
+            // delete from storage
+            Storage::disk('public')->delete('authors/' . $author->photo);
         }
 
         $author->delete();

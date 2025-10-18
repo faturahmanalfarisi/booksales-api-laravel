@@ -11,27 +11,32 @@ class AuthorSeeder extends Seeder
     {
         Author::create([
             'name' => 'Andrea Hirata',
-            'country' => 'Indonesia',
+            'photo' => 'andrea_hirata.jpg',
+            'bio' => 'Penulis Laskar Pelangi dari Belitung.',
         ]);
 
         Author::create([
             'name' => 'Tere Liye',
-            'country' => 'Indonesia',
+            'photo' => 'tere_liye.jpg',
+            'bio' => 'Penulis fiksi populer Indonesia dengan genre fantasi dan romansa.',
         ]);
 
         Author::create([
             'name' => 'J.K. Rowling',
-            'country' => 'United Kingdom',
+            'photo' => 'jk_rowling.jpg',
+            'bio' => 'Penulis asal Inggris, terkenal dengan seri Harry Potter.',
         ]);
 
         Author::create([
             'name' => 'Naguib Mahfouz',
-            'country' => 'Mesir',
+            'photo' => null,
+            'bio' => 'Pemenang Nobel Sastra asal Mesir.',
         ]);
 
         Author::create([
             'name' => 'Benedict Evans',
-            'country' => 'United Kingdom',
+            'photo' => null,
+            'bio' => 'Analis teknologi dan strategi pasar.',
         ]);
     }
 }
