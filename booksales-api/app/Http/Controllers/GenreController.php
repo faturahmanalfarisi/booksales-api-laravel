@@ -20,7 +20,7 @@ class GenreController extends Controller
 
         return response()->json([
             "success" => true,
-            "massage" => "Get all resources",
+            "message" => "Get all resources",
             "data" => $genres,
         ], 200);
     }
@@ -45,8 +45,82 @@ class GenreController extends Controller
 
         return response()->json([
             'succses' => true,
-            'massage' => 'Resource added succesfully!',
+            'message' => 'Resource added successfully!',
             'data'=> $genre
         ], 201);
+    }
+
+    // Metode Show (Tugas)
+    public function show(string $id) {
+        $genre = Genre::find($id);
+
+        if (!$genre) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Resource not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'succsess' => true,
+            'message' => 'Get detail resource',
+            'data'=> $genre
+        ], 200);
+    }
+
+    // Metode Update (Tugas)
+    public function update(string $id, Request $request) {
+        $genre = Genre::find($id);
+
+        if (!$genre) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Resource not found'
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()
+            ], 422);
+        }
+
+        $data = [
+            'name' => $request->name,
+            'description' => $request->description,
+        ];
+
+        $genre->update($data);
+
+        return response()->json([
+            'succses' => true,
+            'message' => 'Resource updated succesfully!',
+            'data'=> $genre
+        ], 200);
+    }
+
+    // Metode Destroy (Tugas)
+    public function destroy(string $id) {
+        $genre = Genre::find($id);
+
+        if (!$genre) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Resource not found'
+            ], 404);
+        }
+
+        $genre->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Delete resource successfully'
+        ]);
     }
 }
