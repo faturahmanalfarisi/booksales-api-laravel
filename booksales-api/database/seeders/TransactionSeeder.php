@@ -17,7 +17,7 @@ class TransactionSeeder extends Seeder
             'order_number' => 'ORD-OOO1',
             'customer_id' => 2,
             'book_id' => 1,
-            'total_amount' => 250000.00,
+            'total_amount' => 40000.00,
         ]);
 
         Transaction::create([

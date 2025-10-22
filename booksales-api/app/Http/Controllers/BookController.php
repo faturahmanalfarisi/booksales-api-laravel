@@ -9,13 +9,21 @@ use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
-    public function index() {
-        $books = Book::with('author', 'genre')->get();
+    public function index(Request $request) {
+        $query = Book::with('author', 'genre');
+
+        if ($request->has('search')) {
+            $searchTerm = $request->search;
+            $query->where('title', 'like', '%' . $searchTerm . '%');
+        }
+
+        $books = $query->get();
 
         if ($books->isEmpty()) {
+            $message = $request->has('search') ? "No books found matching the search criteria." : "Resource data not found";
             return response()->json([
                 "success" => false,
-                "message" => "Resource data not found",
+                "message" => $message,
             ], 200);
         }
 
@@ -103,7 +111,7 @@ class BookController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric',
             'stock' => 'nullable|integer',
-            'cover_photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'cover_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'genre_id' => 'required|exists:genres,id',
             'author_id' => 'required|exists:authors,id',
         ]);

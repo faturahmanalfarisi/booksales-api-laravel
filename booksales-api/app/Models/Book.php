@@ -12,6 +12,11 @@ class Book extends Model
         'title', 'description', 'price', 'stock', 'cover_photo', 'genre_id', 'author_id'
     ];
 
+    protected $casts = [
+        'price' => 'decimal:2',
+        'stock' => 'integer',
+    ];
+
     public function genre()
     {
         return $this->belongsTo(Genre::class, 'genre_id');
