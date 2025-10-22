@@ -30,7 +30,6 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
-        // 1. validator & cek validator
         $validator = Validator::make($request->all(), [
             'book_id' => 'required|exists:books,id',
             'quantity' => 'required|integer|min:1'
@@ -44,10 +43,8 @@ class TransactionController extends Controller
             ], 422);
         }
 
-        // 2. generate orderNumber -> unique | ORD-0123456789
         $uniqueCode = "ORD-" . strtoupper(uniqid());
 
-        // 3. ambil user yang sedang login & cek login (apakah ada data user?)
         $user = auth('api')->user();
 
         if (!$user) {
@@ -57,10 +54,8 @@ class TransactionController extends Controller
             ], 401);
         }
 
-        // 4. mencari data buku dari request
         $book = Book::find($request->book_id);
 
-        // 5. cek stok buku
         if ($book->stock < $request->quantity) {
             return response()->json([
                 'success' => false,
@@ -68,16 +63,13 @@ class TransactionController extends Controller
             ], 400);
         }
 
-        // 6. hitung total harga = price * quantity
         $totalAmount = $book->price * $request->quantity;
 
-        /// 7. kurangi stok buku (update)
         DB::beginTransaction();
         try {
             $book->stock -= $request->quantity;
             $book->save();
 
-            // 8. simpan data transaksi
             $transaction = Transaction::create([
                 'order_number' => $uniqueCode,
                 'customer_id' => $user->id,
@@ -141,42 +133,48 @@ class TransactionController extends Controller
             ], 422);
         }
 
-        // Ambil data buku lama
         $oldBook = Book::find($transaction->book_id);
-        $oldQuantity = $oldBook->transactions()->where('id', $id)->first() ? ($transaction->total_amount / $oldBook->price) : 0; // Kuantitas lama
 
-        // Cari data buku baru
+        if (!$oldBook) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Original book resource not found'
+            ], 404);
+        }
+
+        $oldQuantity = (int) round($transaction->total_amount / $oldBook->price);
+
         $newBook = Book::find($request->book_id);
         $newQuantity = $request->quantity;
 
-        // Hanya Admin yang bisa mengupdate
-        // Kembalikan stok lama ke buku lama, lalu kurangi stok dari buku baru.
+        if (!$newBook) {
+            return response()->json([
+                'success' => false,
+                'message' => 'New book resource not found for update'
+            ], 404);
+        }
+
         DB::beginTransaction();
         try {
-            // 1. Kembalikan stok lama ke buku lama (jika buku lama masih ada)
-            if ($oldBook) {
-                $oldBook->stock += $oldQuantity;
-                $oldBook->save();
-            }
+            $oldBook->stock += $oldQuantity;
+            $oldBook->save();
 
-            // 2. Cek stok buku baru
-            if ($newBook->stock < $newQuantity) {
+            $currentStock = $newBook->stock;
+
+            if ($currentStock < $newQuantity) {
                 DB::rollBack();
                 return response()->json([
                     'success' => false,
-                    'message' => 'Stok buku baru tidak cukup untuk penyesuaian'
+                    'message' => "Stok buku baru ({$newBook->title}) tidak cukup. Tersisa: {$currentStock}"
                 ], 400);
             }
 
-            // 3. Kurangi stok dari buku baru
             $newBook->stock -= $newQuantity;
             $newBook->save();
 
-            // 4. Hitung total harga baru dan update transaksi
             $newTotalAmount = $newBook->price * $newQuantity;
 
             $transaction->update([
-                'customer_id' => $transaction->customer_id, // Customer tetap sama
                 'book_id' => $request->book_id,
                 'total_amount' => $newTotalAmount,
             ]);
@@ -184,8 +182,8 @@ class TransactionController extends Controller
             DB::commit();
 
             return response()->json([
-                'succses' => true,
-                'message' => 'Transaction updated succesfully!',
+                'success' => true,
+                'message' => 'Transaction updated successfully!',
                 'data'=> $transaction->load('user', 'book')
             ], 200);
 
@@ -208,19 +206,15 @@ class TransactionController extends Controller
             ], 404);
         }
 
-        // Batalkan transaksi berarti kembalikan stok buku ke database.
         $book = Book::find($transaction->book_id);
 
         DB::beginTransaction();
         try {
-            // Hitung kuantitas buku yang dibeli dalam transaksi ini
             $quantity = $transaction->total_amount / $book->price;
 
-            // Kembalikan stok
             $book->stock += $quantity;
             $book->save();
 
-            // Hapus transaksi
             $transaction->delete();
 
             DB::commit();
