@@ -59,7 +59,7 @@ class AuthorController extends Controller
 
         // 5. response
         return response()->json([
-            'succses' => true,
+            'success' => true,
             'message' => 'Resource added successfully!',
             'data'=> $author
         ], 201);
@@ -76,7 +76,7 @@ class AuthorController extends Controller
         }
 
         return response()->json([
-            'succsess' => true,
+            'success' => true,
             'message' => 'Get detail resource',
             'data'=> $author
         ], 200);
@@ -129,7 +129,7 @@ class AuthorController extends Controller
         $author->update($data);
 
         return response()->json([
-            'succses' => true,
+            'success' => true,
             'message' => 'Resource updated succesfully!',
             'data'=> $author
         ], 200);
