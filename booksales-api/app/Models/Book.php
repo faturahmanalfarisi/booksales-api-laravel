@@ -11,4 +11,19 @@ class Book extends Model
     protected $fillable = [
         'title', 'description', 'price', 'stock', 'cover_photo', 'genre_id', 'author_id'
     ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+        'stock' => 'integer',
+    ];
+
+    public function genre()
+    {
+        return $this->belongsTo(Genre::class, 'genre_id');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(Author::class, 'author_id');
+    }
 }
