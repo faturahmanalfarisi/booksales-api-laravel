@@ -28,13 +28,12 @@ Route::apiResource('/authors', AuthorController::class)->only(['index', 'show'])
 // Protected by JWT (General)
 Route::middleware(['auth:api'])->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
-    
+
     Route::apiResource('/transactions', TransactionController::class)->only(['index', 'store', 'show']);
 
     // Protected by RBAC (Role: admin)
     Route::middleware(['role:admin'])->group(function() {
         // Books (CUD - Restricted to Admin)
-        Route::apiResource('/books', BookController::class)->only(['store', 'update', 'destroy']);
 
         // Genres (CUD - Restricted to Admin)
         Route::apiResource('/genres', GenreController::class)->only(['store', 'update', 'destroy']);
@@ -46,3 +45,5 @@ Route::middleware(['auth:api'])->group(function(){
         Route::apiResource('/transactions', TransactionController::class)->only(['update', 'destroy']);
     });
 });
+
+Route::apiResource('/books', BookController::class)->only(['store', 'update', 'destroy']);

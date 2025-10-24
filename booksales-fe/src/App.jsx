@@ -1,0 +1,61 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import Home from "./pages/public"
+import PublicLayout from "./layouts/public"
+import Books from "./pages/public/books"
+import Login from "./pages/auth/login"
+import Register from "./pages/auth/register"
+import AdminLayout from "./layouts/admin"
+import Dashboard from "./pages/admin"
+import AdminBooks from "./pages/admin/books"
+import BookCreate from "./pages/admin/books/create"
+import AuthorsIndex from "./pages/admin/authors"
+import AuthorCreate from "./pages/admin/authors/create"
+import GenresIndex from "./pages/admin/genres"
+import GenreCreate from "./pages/admin/genres/create"
+
+function App() {
+
+  return (
+    <>
+      <BrowserRouter>
+      <Routes>
+        {/* Public */}
+        <Route element={<PublicLayout />}>
+        <Route index element={<Home />} />
+        <Route path="books" element={<Books />} />
+        </Route>
+
+        {/* Auth */}
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+
+        {/* Admin */}
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+
+          {/* Authors */}
+          <Route path="authors">
+            <Route index element={<AuthorsIndex />} />
+            <Route path="create" element={<AuthorCreate />} />
+          </Route>
+
+          {/* Genres */}
+          <Route path="genres">
+            <Route index element={<GenresIndex />} />
+            <Route path="create" element={<GenreCreate />} />
+          </Route>
+
+          {/* Books */}
+          <Route path="books">
+            <Route index element={<AdminBooks />} />
+            <Route path="create" element={<BookCreate />} />
+          </Route>
+        
+        </Route>
+      </Routes>
+      </BrowserRouter>
+    </>
+  )
+}
+
+export default App
