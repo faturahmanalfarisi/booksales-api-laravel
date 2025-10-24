@@ -36,10 +36,8 @@ Route::middleware(['auth:api'])->group(function(){
         // Books (CUD - Restricted to Admin)
 
         // Genres (CUD - Restricted to Admin)
-        Route::apiResource('/genres', GenreController::class)->only(['store', 'update', 'destroy']);
 
         // Authors (CUD - Restricted to Admin)
-        Route::apiResource('/authors', AuthorController::class)->only(['store', 'update', 'destroy']);
 
         // Transactions (CUD - Restricted to Admin)
         Route::apiResource('/transactions', TransactionController::class)->only(['update', 'destroy']);
@@ -47,3 +45,5 @@ Route::middleware(['auth:api'])->group(function(){
 });
 
 Route::apiResource('/books', BookController::class)->only(['store', 'update', 'destroy']);
+Route::apiResource('/genres', GenreController::class)->only(['store', 'update', 'destroy']);
+Route::apiResource('/authors', AuthorController::class)->only(['store', 'update', 'destroy']);

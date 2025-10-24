@@ -5,12 +5,14 @@ import { createGenre } from "../../../_services/genres";
 export default function GenreCreate() {
   const [formData, setFormData] = useState({
     name: "",
+    description: "",
   });
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormData({
       ...formData,
       [name]: value,
@@ -21,7 +23,13 @@ export default function GenreCreate() {
     e.preventDefault();
 
     try {
-      await createGenre(formData);
+      const payload = new FormData();
+      
+      // Tambahkan field teks
+      payload.append('name', formData.name);
+      payload.append('description', formData.description);
+
+      await createGenre(payload);
       navigate("/admin/genres");
     } catch (error) {
       console.log(error);
@@ -40,7 +48,7 @@ export default function GenreCreate() {
             <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
               <div className="sm:col-span-2">
                 <label
-                  htmlFor="name"
+                  for="name"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Genre Name
@@ -55,6 +63,25 @@ export default function GenreCreate() {
                   placeholder="Genre Name"
                   required
                 />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label
+                  for="description"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  rows="4"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                  placeholder="Write a description for the genre..."
+                  required
+                ></textarea>
               </div>
             </div>
             <div className="flex items-center space-x-4">

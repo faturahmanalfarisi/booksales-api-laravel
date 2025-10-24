@@ -5,23 +5,43 @@ import { createAuthor } from "../../../_services/authors";
 export default function AuthorCreate() {
   const [formData, setFormData] = useState({
     name: "",
+    bio: "",
+    photo: null,
   });
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    const { name, value, files } = e.target;
+
+    if (name === "photo") {
+      setFormData({
+        ...formData,
+        photo: files[0],
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await createAuthor(formData);
+      const payload = new FormData();
+      // Tambahkan field teks
+      payload.append('name', formData.name);
+      payload.append('bio', formData.bio);
+
+      // Tambahkan file photo
+      if (formData.photo) {
+        payload.append('photo', formData.photo);
+      }
+
+      await createAuthor(payload);
       navigate("/admin/authors");
     } catch (error) {
       console.log(error);
@@ -40,7 +60,7 @@ export default function AuthorCreate() {
             <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
               <div className="sm:col-span-2">
                 <label
-                  htmlFor="name"
+                  for="name"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Author Name
@@ -53,6 +73,43 @@ export default function AuthorCreate() {
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                   placeholder="Author Name"
+                  required
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label
+                  for="bio"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Biography (Bio)
+                </label>
+                <textarea
+                  id="bio"
+                  name="bio"
+                  rows="4"
+                  value={formData.bio}
+                  onChange={handleChange}
+                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                  placeholder="Write a short biography for the author..."
+                  required
+                ></textarea>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label
+                  for="photo"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Author Photo
+                </label>
+                <input
+                  type="file"
+                  name="photo"
+                  id="photo"
+                  accept="image/*"
+                  onChange={handleChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                   required
                 />
               </div>

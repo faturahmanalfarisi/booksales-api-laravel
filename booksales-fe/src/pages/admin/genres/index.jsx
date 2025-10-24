@@ -39,6 +39,10 @@ export default function GenresIndex() {
               <th scope="col" className="px-6 py-3">
                 Genre Name
               </th>
+              {/* Kolom Baru: Deskripsi */}
+              <th scope="col" className="px-6 py-3">
+                Description
+              </th>
               <th scope="col" className="px-6 py-3">
                 <span className="sr-only">Actions</span>
               </th>
@@ -57,6 +61,8 @@ export default function GenresIndex() {
                   {genre.id}
                 </th>
                 <td className="px-6 py-4">{genre.name}</td>
+                {/* Menampilkan Deskripsi */}
+                <td className="px-6 py-4 truncate max-w-xs">{genre.description}</td>
                 <td className="px-6 py-4 text-right">
                   {/* Action Dropdown would go here (Edit/Delete) */}
                 </td>

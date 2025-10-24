@@ -39,6 +39,14 @@ export default function AuthorsIndex() {
               <th scope="col" className="px-6 py-3">
                 Author Name
               </th>
+              {/* Kolom Baru: Photo */}
+              <th scope="col" className="px-6 py-3">
+                Photo
+              </th>
+              {/* Kolom Baru: Bio */}
+              <th scope="col" className="px-6 py-3">
+                Bio
+              </th>
               <th scope="col" className="px-6 py-3">
                 <span className="sr-only">Actions</span>
               </th>
@@ -57,6 +65,12 @@ export default function AuthorsIndex() {
                   {author.id}
                 </th>
                 <td className="px-6 py-4">{author.name}</td>
+                {/* Menampilkan Status Photo (seperti di halaman Books) */}
+                <td className="px-6 py-4">
+                  {author.photo ? "Yes" : "No"}
+                </td>
+                {/* Menampilkan Bio */}
+                <td className="px-6 py-4 truncate max-w-xs">{author.bio}</td>
                 <td className="px-6 py-4 text-right">
                   {/* Action Dropdown would go here (Edit/Delete) */}
                 </td>
