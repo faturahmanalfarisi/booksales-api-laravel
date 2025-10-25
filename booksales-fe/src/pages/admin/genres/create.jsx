@@ -12,7 +12,6 @@ export default function GenreCreate() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData({
       ...formData,
       [name]: value,
@@ -24,10 +23,9 @@ export default function GenreCreate() {
 
     try {
       const payload = new FormData();
-      
-      // Tambahkan field teks
-      payload.append('name', formData.name);
-      payload.append('description', formData.description);
+      for (const key in formData) {
+        payload.append(key, formData[key]);
+      }
 
       await createGenre(payload);
       navigate("/admin/genres");
@@ -48,7 +46,7 @@ export default function GenreCreate() {
             <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
               <div className="sm:col-span-2">
                 <label
-                  for="name"
+                  htmlFor="name"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Genre Name
@@ -67,7 +65,7 @@ export default function GenreCreate() {
 
               <div className="sm:col-span-2">
                 <label
-                  for="description"
+                  htmlFor="description"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Description
@@ -75,12 +73,11 @@ export default function GenreCreate() {
                 <textarea
                   id="description"
                   name="description"
-                  rows="4"
                   value={formData.description}
                   onChange={handleChange}
+                  rows="6"
                   className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
-                  placeholder="Write a description for the genre..."
-                  required
+                  placeholder="Write a short description..."
                 ></textarea>
               </div>
             </div>
@@ -90,6 +87,12 @@ export default function GenreCreate() {
                 className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
               >
                 Create Genre
+              </button>
+              <button
+                type="reset"
+                className="text-gray-600 inline-flex items-center hover:text-white border border-gray-600 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-gray-500 dark:text-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-900"
+              >
+                Reset
               </button>
             </div>
           </form>
