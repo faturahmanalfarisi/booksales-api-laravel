@@ -12,6 +12,8 @@ import AuthorsIndex from "./pages/admin/authors"
 import AuthorCreate from "./pages/admin/authors/create"
 import GenresIndex from "./pages/admin/genres"
 import GenreCreate from "./pages/admin/genres/create"
+import BookEdit from "./pages/admin/books/edit"
+import ShowBook from "./pages/public/books/show"
 
 function App() {
 
@@ -21,8 +23,11 @@ function App() {
       <Routes>
         {/* Public */}
         <Route element={<PublicLayout />}>
-        <Route index element={<Home />} />
-        <Route path="books" element={<Books />} />
+          <Route index element={<Home />} />
+          <Route path="books">
+            <Route index element={<Books />} />
+            <Route path="show/:id" element={<ShowBook />} />
+          </Route>
         </Route>
 
         {/* Auth */}
@@ -49,6 +54,7 @@ function App() {
           <Route path="books">
             <Route index element={<AdminBooks />} />
             <Route path="create" element={<BookCreate />} />
+            <Route path="edit/:id" element={<BookEdit />} />
           </Route>
         
         </Route>
