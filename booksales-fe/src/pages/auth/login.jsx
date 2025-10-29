@@ -6,8 +6,8 @@ export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
-  })
+    password: "",
+  });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -15,38 +15,38 @@ export default function Login() {
   const decodedData = useDecoceToken(token);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
 
     setFormData({
       ...formData,
-      [name]: value
-    })
-  }
+      [name]: value,
+    });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     try {
-      const response = await login(formData)
+      const response = await login(formData);
 
       localStorage.setItem("accessToken", response.token);
       localStorage.setItem("userInfo", JSON.stringify(response.user));
 
       return navigate(response.user.role === "admin" ? "/admin" : "/");
     } catch (error) {
-      setError(error?.response?.data?.message)
+      setError(error?.response?.data?.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (token && decodedData && decodedData.success) {
       navigate("/admin");
     }
-  }, [token, decodedData, navigate])
+  }, [token, decodedData, navigate]);
 
   return (
     <>
@@ -58,11 +58,9 @@ export default function Login() {
                 Sign in to your account
               </h1>
 
-              {error &&(
-                <div className="text-red-500 text-sm">{error}</div>
-              )}
+              {error && <div className="text-red-500 text-sm">{error}</div>}
 
-              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6" action="#">
+              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                 <div>
                   <label
                     htmlFor="email"
@@ -106,7 +104,7 @@ export default function Login() {
                       aria-describedby="terms"
                       type="checkbox"
                       className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-indigo-600 dark:ring-offset-gray-800"
-                      required=""
+                      required
                     />
                   </div>
                   <div className="ml-3 text-sm">
